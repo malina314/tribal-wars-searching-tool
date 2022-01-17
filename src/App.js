@@ -15,8 +15,14 @@ class App {
         // this.repository = repo;
 
         this.initializeControllers(controllers);
-        this.app.engine('handlebars', handlebars.engine());
-        this.app.set('view engine', 'handlebars');
+        this.app.engine('hbs', handlebars.engine({ 
+            extname: 'hbs', 
+            defaultLayout: 'main', 
+            layoutsDir: './views/layouts',
+            partialsDir: './views/partials',
+            helpers: require('./handlebars-helpers')
+        }));
+        this.app.set('view engine', 'hbs');
         this.app.set('views', './views');
 
         this.listen(5000);

@@ -5,7 +5,7 @@ module.exports = class TestController {
     constructor() {
         // super('elements', 'element', { id: 'elementId' });
 
-        this.path = '/home';
+        this.path = '/data';
         this.router = express.Router();
 
         this.initializeRoutes();
@@ -18,7 +18,7 @@ module.exports = class TestController {
 
     async getAll(req, res) {
         const ddata = await getData('https://plp8.plemiona.pl/map/ally.txt');
-        res.render('home', {
+        res.render('data', {
             data: ddata
         });
     }
