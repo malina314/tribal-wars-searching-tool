@@ -15,6 +15,7 @@ class App {
         // this.repository = repo;
 
         this.initializeControllers(controllers);
+
         this.app.engine('hbs', handlebars.engine({ 
             extname: 'hbs', 
             defaultLayout: 'main', 
@@ -24,6 +25,9 @@ class App {
         }));
         this.app.set('view engine', 'hbs');
         this.app.set('views', './views');
+
+        this.app.use(express.json());
+        this.app.use(express.urlencoded({ extended: true }));
 
         this.listen(5000);
     }

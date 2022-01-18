@@ -14,7 +14,7 @@ module.exports = class MainpageController {
 
     async renderHomepage(req, res) {
         res.render('home', {
-            target: 'test'
+            target: 'query'
         });
     }
 };
