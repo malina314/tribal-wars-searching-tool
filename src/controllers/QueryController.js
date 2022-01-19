@@ -8,6 +8,10 @@ module.exports = class QueryController {
         this.initializeRoutes();
     }
 
+    setRepository(repo) {
+        this.repository = repo;
+    }
+
     initializeRoutes() {
         this.router.route(this.path).get(this.renderQuerypage);
     }

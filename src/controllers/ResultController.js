@@ -10,21 +10,45 @@ module.exports = class ResultController {
         this.initializeRoutes();
     }
 
+    setRepository(repo) {
+        this.repository = repo;
+    }
+
     initializeRoutes() {
         this.router.route(this.path).post(this.renderResultpage);
     }
 
     
-    async renderResultpage(req, res) {
-        console.log(req.method);
+    renderResultpage = async (req, res) => {
+        // console.log(req.method);
+        // console.log(this);
 
-        let body = '';
+        let data = '';
+
         req.on('data', chunk => {
-            body += chunk.toString(); // convert Buffer to string
+            data += chunk.toString();
         });
-        req.on('end', () => {
-            console.log(body);
-            res.render('result');
+
+        req.on('end', async () => {
+            data = JSON.parse(data);
+            console.log(data.formQueryType);
+            let result = '';
+
+            switch (data.formQueryType) {
+                case '1':
+                    // ** used attributes:
+                    //  - data.form1Server
+                    //  - data.form1Tribes
+                    //  - data.form1Players
+                    // ** select villages form V join P join T where P.name == or ... and tribe == or...
+                    result = await this.repository.getVillages(data.form1Server);
+                    result = result.map(line => line.x + '|' + line.y).join(' ');
+                    break;
+            }
+
+            console.log(result.length);
+
+            res.render('result', {result});
         });
     }
 };

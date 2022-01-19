@@ -19,6 +19,7 @@ module.exports = class DbMock {
         if (!this.tables[server]) {
             const rawTribes = await getData(`https://pl${server}.plemiona.pl/map/ally.txt`); // to jest bezpieczne bo server jest walidowany wcześniej
             // todo: fix pl chars (hint: w urlach tak to jest parsowane)
+            // ! prawdopodbnie txt kończy się \n więc po splicie ostatnia linia jest pusta
             // id, fullName, name, membersCnt, villagesCnt, top40points, points, rank
             const tribes = rawTribes.split(/\n/gm).map(line => {
                 const arr = line.split(/,/gm)

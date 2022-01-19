@@ -16,17 +16,14 @@
             <div class="mb-4 form-outline">
                 <input type="text" id="form1Server" class="form-control" />
                 <label class="form-label" for="form1">Świat</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form1Tribes" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista plemion</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form1Players" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista graczy</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
         </div>
 
@@ -34,12 +31,10 @@
             <div class="mb-4 form-outline">
                 <input type="text" id="form2Server" class="form-control" />
                 <label class="form-label" for="form1">Świat</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form2Tribes" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista plemion</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
         </div>
 
@@ -47,31 +42,26 @@
             <div class="mb-4 form-outline">
                 <input type="text" id="form3Server" class="form-control" />
                 <label class="form-label" for="form1">Świat</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
 
             <label class="form-label" for="textAreaExample">Grupa 1</label>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Tribes1" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista plemion</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Players1" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista graczy</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
 
             <label class="form-label" for="textAreaExample">Grupa 2</label>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Tribes2" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista plemion</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Players2" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista graczy</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
         </div>
 
@@ -79,17 +69,20 @@
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form4Servers" rows="4"></textarea>
                 <label class="form-label" for="textAreaExample">Lista światów</label>
-                <div class="form-notch"><div class="form-notch-leading"></div><div class="form-notch-middle"></div><div class="form-notch-trailing"></div></div>
             </div>
         </div>
 
         <button id="submitButton" type="submit" class="btn btn-primary btn-block">submit</button>
     </form>
 
-    {{!-- <div class="spinner-border text-primary" role="status"></div> --}}
+    <div id="resultContainer"></div>
 </div>
 
 <script>
+    document.querySelectorAll('.form-outline').forEach((formOutline) => {
+        new mdb.Input(formOutline).init();
+    });
+
     window.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#submitButton').addEventListener('click', submit);
     });
@@ -97,14 +90,15 @@
     var visibleGroup = '0';
 
     $(document).on('change', '#formQueryType', function() {
-        //console.log(this.value);
         const showHideDelay = 500;
+
         if (visibleGroup !== '0') {
             $(`div#group${visibleGroup}`).hide(showHideDelay);
         }
         if (this.value !== '0') {
             $(`div#group${this.value}`).show(showHideDelay);
         }
+
         visibleGroup = this.value;
     });
 
@@ -119,13 +113,20 @@
 
     function submit(event) {
         event.preventDefault();
+
+        document.querySelector('#resultContainer').innerHTML = `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+        `
+        
         axios({
             method: 'POST',
             url: '/result',
             data: getFormsData(),
         })
-        .then(data => {
-            //document.write(data.data);
+        .then(res => {
+            document.write(res.data);
         });
     }
 </script>

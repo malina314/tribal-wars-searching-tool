@@ -12,7 +12,7 @@ const handlebars = require('express-handlebars');
 class App {
     constructor(repo, controllers) {
         this.app = express();
-        // this.repository = repo;
+        this.repository = repo;
 
         this.initializeControllers(controllers);
 
@@ -41,7 +41,7 @@ class App {
   initializeControllers(controllers) {
     controllers.forEach((controller) => {
         this.app.use("/", controller.router);
-        // controller.setRepository(this.repository);
+        controller.setRepository(this.repository);
     });
   }
 
