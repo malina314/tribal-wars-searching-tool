@@ -14,9 +14,8 @@ module.exports = class DbMock {
     }
 
     async updateServerData(server) {
-        // zweryfikować czy plik jest realtme czy raz na jakiś czas -> chyba realtime
-        // zrobić żeby updatować tylko w sensownym odstępie czasu -> session storage
-        // todo: session storage
+        // ** plik txt jest updatowany realtime ** //
+        // todo: trzymać w zmiennej lokalnej po stronie node datę ostatniego updatu i jeżeli >= 10 min to updatować
         if (!this.tables[server]) {
             const rawTribes = await getData(`https://pl${server}.plemiona.pl/map/ally.txt`); // to jest bezpieczne bo server jest walidowany wcześniej
             // todo: fix pl chars (hint: w urlach tak to jest parsowane)
