@@ -1,4 +1,18 @@
 <div class="mb-4 form-outline">
-    <textarea class="form-control" id="resultArea" rows="4" readonly>{{result}}</textarea>
-    <label class="form-label" for="textAreaExample">rezultat</label>
+    <textarea class="form-control" id="resultArea" rows="8" readonly>{{result}}</textarea>
+    <label class="form-label" for="resultArea">wynik</label>
 </div>
+<button id="copyButton" type="button" class="btn btn-primary btn-block">skopiuj</button>
+
+<script>
+    document.querySelector('#copyButton').addEventListener('click', copyFunc);
+
+    function copyFunc() {
+        navigator.clipboard.writeText(document.querySelector('#resultArea').value);
+
+        const btn = document.querySelector('#copyButton');
+        btn.style = 'transition-duration: .2s; transition-timing-function: ease;'
+        btn.innerHTML = 'skopiowano';
+        btn.classList.add('btn-success');
+    }
+</script>

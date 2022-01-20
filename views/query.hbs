@@ -1,7 +1,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <div>
-    <form style="width: calc(100% + 20px);" action="/result" method="post">
+    <form class="wider mb-5" action="/result" method="post">
         <div class="mb-4 xl:w-96">
             <select id="formQueryType" class="form-select px-3 py-1.5 bg-white bg-clip-padding bg-no-repeat rounded transition ease-in-out m-0 focus:bg-white focus:border-blue-600 focus:outline-none">
                 <option value="0" selected>--- wybierz rozdzaj zapytania ---</option>
@@ -72,17 +72,15 @@
             </div>
         </div>
 
-        <button id="submitButton" type="submit" class="btn btn-primary btn-block">submit</button>
+        <button id="submitButton" type="submit" class="btn btn-primary btn-block">szukaj</button>
     </form>
 
-    <div id="resultContainer"></div>
+    <div id="resultContainer" class="wider"></div>
 </div>
 
-<script>
-    document.querySelectorAll('.form-outline').forEach((formOutline) => {
-        new mdb.Input(formOutline).init();
-    });
+{{> initFormsScript}}
 
+<script>
     window.addEventListener('DOMContentLoaded', () => {
         document.querySelector('#submitButton').addEventListener('click', submit);
     });
@@ -126,7 +124,12 @@
             data: getFormsData(),
         })
         .then(res => {
-            document.write(res.data);
+            //console.log(res.data);
+            document.querySelector('#resultContainer').innerHTML = '';
+            $(res.data).appendTo('#resultContainer');
+            setTimeout(() => {
+                new mdb.Input(document.querySelector('#resultContainer>div')).init();
+            }, 100);
         });
     }
 </script>
@@ -134,5 +137,9 @@
 <style>
     .hidden {
         display: none;
+    }
+    
+    .wider {
+        width: 17rem;
     }
 </style>

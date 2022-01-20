@@ -20,9 +20,6 @@ module.exports = class ResultController {
 
     
     renderResultpage = async (req, res) => {
-        // console.log(req.method);
-        // console.log(this);
-
         let data = '';
 
         req.on('data', chunk => {
@@ -48,7 +45,10 @@ module.exports = class ResultController {
 
             console.log(result.length);
 
-            res.render('result', {result});
+            res.render('result', {
+                result,
+                layout: 'partial.hbs'
+            });
         });
     }
 };
