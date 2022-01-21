@@ -1,8 +1,9 @@
 const getData = require('../getData');
+const decodeUriComponent = require('decode-uri-component');
 
 module.exports = class DbMock {
     constructor() {
-        this.tables = {}
+        this.tables = {};
         /* 
             180: {
                 lastUpdate: 566846156461894,
@@ -13,6 +14,14 @@ module.exports = class DbMock {
         */
     }
 
+    decodeRawText(text) {
+        // const result = decodeURI(text).replace(/\+/gm, ' ').replace(/%3F/gm, '?').replace(/%2F/gm, '/').replace(/%2B/gm, '+');
+        // if (result.indexOf('%')) {
+        //     console.error('jakiś % się nie sparsował', result);
+        // }
+        return decodeUriComponent(text);
+    }
+
     async updateServerData(server) {
         // ** plik txt jest updatowany realtime ** //
         // todo: trzymać w zmiennej lokalnej po stronie node datę ostatniego updatu i jeżeli >= 10 min to updatować
@@ -21,7 +30,7 @@ module.exports = class DbMock {
             // todo: fix pl chars (hint: w urlach tak to jest parsowane)
             // ! prawdopodbnie txt kończy się \n więc po splicie ostatnia linia jest pusta
             // id, fullName, name, membersCnt, villagesCnt, top40points, points, rank
-            const tribes = rawTribes.split(/\n/gm).map(line => {
+            const tribes = this.decodeRawText(rawTribes).split(/\n/gm).map(line => {
                 const arr = line.split(/,/gm)
                 return {
                     id: arr[0],
@@ -38,7 +47,7 @@ module.exports = class DbMock {
             const rawPlayers = await getData(`https://pl${server}.plemiona.pl/map/player.txt`); // to jest bezpieczne bo server jest walidowany wcześniej
             // todo: fix pl chars (hint: w urlach tak to jest parsowane)
             // id, name, tribeId, villagesCnt, points, rank
-            const players = rawPlayers.split(/\n/gm).map(line => {
+            const players = this.decodeRawText(rawPlayers).split(/\n/gm).map(line => {
                 const arr = line.split(/,/gm)
                 return {
                     id: arr[0],
@@ -53,7 +62,7 @@ module.exports = class DbMock {
             const rawVillages = await getData(`https://pl${server}.plemiona.pl/map/village.txt`); // to jest bezpieczne bo server jest walidowany wcześniej
             // todo: fix pl chars (hint: w urlach tak to jest parsowane)
             // id, name, x, y, playerId, points, bonus
-            const villages = rawVillages.split(/\n/gm).map(line => {
+            const villages = this.decodeRawText(rawVillages).split(/\n/gm).map(line => {
                 const arr = line.split(/,/gm)
                 return {
                     id: arr[0],

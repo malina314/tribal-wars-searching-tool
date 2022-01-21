@@ -41,8 +41,13 @@ module.exports = class ResultController {
                     result = await this.repository.getVillages(data.form1Server);
                     result = result.map(line => line.x + '|' + line.y).join(' ');
                     break;
+                case '2':
+                    // result = await this.repository.getTribes(data.form2Server);
+                    // result = result.map(line => line.fullName + '  |  ' + line.name).join('\n');
+                    result = await this.repository.getTribes(data.form2Server);
             }
 
+            console.log(result);
             console.log(result.length);
 
             res.render('result', {
