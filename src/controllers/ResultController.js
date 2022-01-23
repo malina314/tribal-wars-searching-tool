@@ -28,7 +28,7 @@ module.exports = class ResultController {
 
         req.on('end', async () => {
             data = JSON.parse(data);
-            console.log(data.formQueryType);
+            console.log('query type:', data.formQueryType);
             let result = '';
 
             switch (data.formQueryType) {
@@ -47,12 +47,11 @@ module.exports = class ResultController {
                     result = await this.repository.getTribes(data.form2Server);
             }
 
-            console.log(result);
-            console.log(result.length);
+            console.log('result:', result.toString().slice(0, 100));
 
             res.render('result', {
                 result,
-                layout: 'partial.hbs'
+                layout: 'partialLayout.hbs'
             });
         });
     }
