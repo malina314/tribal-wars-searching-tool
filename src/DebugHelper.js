@@ -22,6 +22,9 @@ module.exports = {
             case 'INSERT':
                 console.log(`INSERTED ${res.rowCount} rows.`);
                 break;
+            case 'SELECT':
+                console.log(`SELECTED ${res.rowCount} rows.`);
+                break;
             default:
                 console.log(res);
         }

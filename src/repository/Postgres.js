@@ -14,8 +14,22 @@ module.exports = class Postgres {
         });
     }
 
-    // używanie zmiennej server jest bezpieczne bo jest walidowana wcześniej i spełnia regex /p?[1-9]\d*/
-    async updateServerData(server) {
+    // async getTribes(server) {
+    //     await this.updateServerData(server);
+    //     return this.servers[server];
+    // }
+    
+    async getPlayersFromTribes(server, tribes) {
+        await this.updateServerData(server);
+        return this.getPlayersFromTribesQuery(server, tribes);
+    }
+    
+    async getVillages(server) {
+        await this.updateServerData(server);
+        return this.servers[server].villages;
+    }
+
+    async updateServerData(server) { // używanie zmiennej server jest bezpieczne bo jest walidowana wcześniej i spełnia regex /p?[1-9]\d*/
         if (!this.servers[server]) {
             await this.updateTribes(server);
             await this.updatePlayers(server);
@@ -23,20 +37,27 @@ module.exports = class Postgres {
             this.servers[server] = true;
         }
     }
-    
-    async getTribes(server) {
-        await this.updateServerData(server);
-        return this.servers[server];
+
+    async getPlayersFromTribesQuery(server, tribes) {
+        const query = {
+            text: `SELECT P.name FROM server_${server}_players P
+                JOIN server_${server}_tribes T ON P.tribe_id = T.id
+                WHERE ${this.makeWhereClause('T.name', tribes.length, 'OR')}`,
+            values: tribes,
+        }
+
+        DebugHelper.logQuery(query);
+
+        const res = await this.pool.query(query)
+        .catch(logError);
+
+        DebugHelper.logRes(res);
+
+        return res.rows;
     }
-    
-    async getPlayers(server) {
-        await this.updateServerData(server);
-        return this.servers[server].players;
-    }
-    
-    async getVillages(server) {
-        await this.updateServerData(server);
-        return this.servers[server].villages;
+
+    makeWhereClause(columnName, count, logicalOperator) {
+        return Array(count).fill(0).map((_, i) => `${columnName} = $${i + 1}`).join(` ${logicalOperator} `);
     }
 
     makeValueString(rows, arity) {

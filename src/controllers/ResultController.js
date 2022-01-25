@@ -42,9 +42,8 @@ module.exports = class ResultController {
                     result = result.map(line => line.x + '|' + line.y).join(' ');
                     break;
                 case '2':
-                    // result = await this.repository.getTribes(data.form2Server);
-                    // result = result.map(line => line.fullName + '  |  ' + line.name).join('\n');
-                    result = await this.repository.getTribes(data.form2Server);
+                    result = await this.repository.getPlayersFromTribes(data.form2Server, data.form2Tribes.split(/\s+/gm));
+                    result = result.map(e => e.name).join('\n');
             }
 
             console.log('result:', result.toString().slice(0, 100));
