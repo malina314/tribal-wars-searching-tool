@@ -1,4 +1,4 @@
 node_modules/
-src/random\ stuff/
+random_stuff/
 test/
 .env

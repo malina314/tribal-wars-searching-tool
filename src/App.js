@@ -1,12 +1,4 @@
-const dotenv = require("dotenv").config();
-
-if (dotenv.error) {
-    console.log(dotenv.error);
-}
-
 const express = require('express');
-const getData = require('./getData');
-
 const handlebars = require('express-handlebars');
 
 class App {
@@ -21,7 +13,6 @@ class App {
             defaultLayout: 'main', 
             layoutsDir: './views/layouts',
             partialsDir: './views/partials',
-            helpers: require('./handlebars-helpers')
         }));
         this.app.set('view engine', 'hbs');
         this.app.set('views', './views');

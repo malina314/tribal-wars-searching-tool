@@ -1,8 +1,8 @@
-const getData = require('../getData');
 const { Pool } = require('pg');
 const decodeUriComponent = require('decode-uri-component');
-const logError = require('../logError');
-const DebugHelper = require('../DebugHelper');
+const getData = require('../utils/getData');
+const logError = require('../utils/logError');
+const DebugHelper = require('../utils/DebugHelper');
 
 module.exports = class Postgres {
     constructor() {
@@ -148,11 +148,6 @@ module.exports = class Postgres {
         DebugHelper.logRes(res);
 
         return res.rows;
-    }
-
-    //! UNUSED
-    makeWhereClause(columnName, count, logicalOperator) {
-        return Array(count).fill(0).map((_, i) => `${columnName} = $${i + 1}`).join(` ${logicalOperator} `);
     }
 
     makeParametersSet(count, begin) {

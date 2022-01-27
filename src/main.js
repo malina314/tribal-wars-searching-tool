@@ -1,8 +1,13 @@
+const dotenv = require("dotenv").config();
+
+if (dotenv.error) {
+    console.log(dotenv.error);
+}
+
 const App = require('./App');
 const MainpageController = require('./controllers/MainpageController');
 const QueryController = require('./controllers/QueryController');
 const ResultController = require('./controllers/ResultController');
-const DbMock = require('./repository/DbMock');
 const Posgres = require('./repository/Postgres');
 
 const controllers = [

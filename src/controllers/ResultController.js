@@ -22,7 +22,6 @@ module.exports = class ResultController {
         }
     }
 
-    
     renderResultpage = async (req, res) => {
         let data = '';
 
