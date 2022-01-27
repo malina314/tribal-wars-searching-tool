@@ -11,7 +11,8 @@ const controllers = [
     new ResultController(),
 ];
 
-// const repository = new DbMock();
 const repository = new Posgres();
 
-new App(repository, controllers);
+const app = new App(repository, controllers);
+
+app.start();

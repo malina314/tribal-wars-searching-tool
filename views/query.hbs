@@ -1,7 +1,7 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 <div>
-    <form class="wider mb-5" action="/result" method="post">
+    <form class="wider mb-5">
         <div class="mb-4 xl:w-96">
             <select id="formQueryType" class="form-select px-3 py-1.5 bg-white bg-clip-padding bg-no-repeat rounded transition ease-in-out m-0 focus:bg-white focus:border-blue-600 focus:outline-none">
                 <option value="0" selected>--- wybierz rozdzaj zapytania ---</option>
@@ -9,66 +9,84 @@
                 <option value="2">gracze w plemionach</option>
                 <option value="3">pobliskie wioski</option>
                 <option value="4">gracze na wielu światach</option>
+                <option value="5">zaktualizuj bazę danych</option>
             </select>
         </div>
 
+        <!-- GRUPA 1 -->
         <div class="hidden" id="group1">
             <div class="mb-4 form-outline">
                 <input type="text" id="form1Server" class="form-control" />
-                <label class="form-label" for="form1">Świat</label>
+                <label class="form-label" for="form1Server">Świat</label>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form1Tribes" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista plemion</label>
+                <label class="form-label" for="form1Tribes">Lista plemion</label>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form1Players" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista graczy</label>
+                <label class="form-label" for="form1Players">Lista graczy</label>
             </div>
         </div>
 
+        <!-- GRUPA 2 -->
         <div class="hidden" id="group2">
             <div class="mb-4 form-outline">
                 <input type="text" id="form2Server" class="form-control" />
-                <label class="form-label" for="form1">Świat</label>
+                <label class="form-label" for="form2Server">Świat</label>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form2Tribes" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista plemion</label>
+                <label class="form-label" for="form2Tribes">Lista plemion</label>
             </div>
         </div>
 
+        <!-- GRUPA 3 -->
         <div class="hidden" id="group3">
             <div class="mb-4 form-outline">
                 <input type="text" id="form3Server" class="form-control" />
-                <label class="form-label" for="form1">Świat</label>
+                <label class="form-label" for="form3Server">Świat</label>
             </div>
 
-            <label class="form-label" for="textAreaExample">Grupa 1</label>
+            <label class="form-label">Grupa 1</label>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Tribes1" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista plemion</label>
+                <label class="form-label" for="form3Tribes1">Lista plemion</label>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Players1" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista graczy</label>
+                <label class="form-label" for="form3Players1">Lista graczy</label>
             </div>
 
-            <label class="form-label" for="textAreaExample">Grupa 2</label>
+            <label class="form-label">Grupa 2</label>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Tribes2" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista plemion</label>
+                <label class="form-label" for="form3Tribes2">Lista plemion</label>
             </div>
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form3Players2" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista graczy</label>
+                <label class="form-label" for="form3Players2">Lista graczy</label>
+            </div>
+
+            <div class="mb-4 form-outline">
+                <input type="number" id="form3Range" class="form-control" />
+                <label class="form-label" for="form3Range">Odległość</label>
             </div>
         </div>
 
+        <!-- GRUPA 4 -->
         <div class="hidden" id="group4">
             <div class="mb-4 form-outline">
                 <textarea class="form-control" id="form4Servers" rows="4"></textarea>
-                <label class="form-label" for="textAreaExample">Lista światów</label>
+                <label class="form-label" for="form4Servers">Lista światów</label>
+            </div>
+        </div>
+
+        <!-- GRUPA 5 -->
+        <div class="hidden" id="group5">
+            <div class="mb-4 form-outline">
+                <textarea class="form-control" id="form5Servers" rows="4"></textarea>
+                <label class="form-label" for="form5Servers">Lista światów</label>
             </div>
         </div>
 

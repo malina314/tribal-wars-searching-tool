@@ -14,19 +14,40 @@ module.exports = class Postgres {
         });
     }
 
-    // async getTribes(server) {
-    //     await this.updateServerData(server);
-    //     return this.servers[server];
-    // }
+    async init() {
+        const res = await this.pool.query(`SELECT table_name FROM information_schema.tables
+            WHERE table_schema = 'public';`)
+            .catch(logError);
+
+        res.rows.forEach(row => this.servers[row.table_name.split(/_/g)[1]] = true);
+
+        console.log(this.servers);
+        console.log('Postgres controller ready.');
+    }
     
-    async getPlayersFromTribes(server, tribes) {
+    async getPlayersInTribes(server, tribes) {
         await this.updateServerData(server);
         return this.getPlayersFromTribesQuery(server, tribes);
     }
     
-    async getVillages(server) {
+    async getVillagesOfPlayersOrTribes(server, tribes, players) {
         await this.updateServerData(server);
-        return this.servers[server].villages;
+        return this.getVillagesOfPlayersOrTribesQuery(server, tribes, players);
+    }
+
+    async getVillagesInRange(server, group1, group2, range) {
+        await this.updateServerData(server);
+        return this.getVillagesInRangeQuery(server, group1, group2, range);
+    }
+
+    async getPlayersFromDifferentServers(servers) {
+        await this.updateMultipleServersData(servers);
+        return this.getPlayersFromDifferentServersQuery(servers);
+    }
+
+    async updateMultipleServersData(servers) {
+        await Promise.all(servers.map(server => (this.servers[server] = false, this.updateServerData(server))));
+        return 'OK';
     }
 
     async updateServerData(server) { // używanie zmiennej server jest bezpieczne bo jest walidowana wcześniej i spełnia regex /p?[1-9]\d*/
@@ -42,7 +63,7 @@ module.exports = class Postgres {
         const query = {
             text: `SELECT P.name FROM server_${server}_players P
                 JOIN server_${server}_tribes T ON P.tribe_id = T.id
-                WHERE ${this.makeWhereClause('T.name', tribes.length, 'OR')}`,
+                WHERE T.name IN (${this.makeParametersSet(tribes.length, 1)})`,
             values: tribes,
         }
 
@@ -56,8 +77,89 @@ module.exports = class Postgres {
         return res.rows;
     }
 
+    async getVillagesOfPlayersOrTribesQuery(server, tribes, players) {
+        const query = {
+            text: `SELECT x, y FROM server_${server}_villages V
+                    JOIN server_${server}_players P ON P.id = V.player_id
+                    JOIN server_${server}_tribes T ON T.id = P.tribe_id
+                    WHERE T.name IN (${this.makeParametersSet(tribes.length, 1)})
+                UNION
+                SELECT x, y FROM server_${server}_villages V
+                    JOIN server_${server}_players P ON P.id = V.player_id
+                    WHERE P.name IN (${this.makeParametersSet(players.length, tribes.length + 1)});`,
+            values: tribes.concat(players),
+        }
+
+        DebugHelper.logQuery(query);
+
+        const res = await this.pool.query(query)
+        .catch(logError);
+
+        DebugHelper.logRes(res);
+
+        return res.rows;
+    }
+
+    async getVillagesInRangeQuery(server, group1, group2, range) {
+        range = parseFloat(range);
+        if (isNaN(range)) {
+            throw new Error('Invalid range.');
+        }
+
+        const query = {
+            text: `WITH
+                A AS (
+                    SELECT x, y FROM server_${server}_villages V
+                        JOIN server_${server}_players P ON P.id = V.player_id
+                        JOIN server_${server}_tribes T ON T.id = P.tribe_id
+                        WHERE T.name IN (${this.makeParametersSet(group1.tribes.length, 1)})
+                    UNION
+                    SELECT x, y FROM server_${server}_villages V
+                        JOIN server_${server}_players P ON P.id = V.player_id
+                        WHERE P.name IN (${this.makeParametersSet(group1.players.length, 1 + group1.tribes.length)})),
+                B AS (
+                    SELECT x, y FROM server_${server}_villages V
+                        JOIN server_${server}_players P ON P.id = V.player_id
+                        JOIN server_${server}_tribes T ON T.id = P.tribe_id
+                        WHERE T.name IN (${this.makeParametersSet(group2.tribes.length, 1 + group1.tribes.length + group1.players.length)})
+                    UNION
+                    SELECT x, y FROM server_${server}_villages V
+                        JOIN server_${server}_players P ON P.id = V.player_id
+                        WHERE P.name IN (${this.makeParametersSet(group2.players.length, 1 + group1.tribes.length + group1.players.length + group2.tribes.length)}))
+                SELECT DISTINCT A.x, A.y FROM A
+                    JOIN B ON (A.x - B.x) * (A.x - B.x) + (A.y - B.y) * (A.y - B.y) <= ${range * range};`,
+            values: group1.tribes.concat(group1.players).concat(group2.tribes).concat(group2.players),
+        }
+
+        DebugHelper.logQuery(query);
+
+        const res = await this.pool.query(query)
+        .catch(logError);
+
+        DebugHelper.logRes(res);
+
+        return res.rows;
+    }
+
+    async getPlayersFromDifferentServersQuery(servers) {
+        const res = await this.pool.query(servers.map(server => `SELECT name FROM server_${server}_players`).join(' INTERSECT '))
+        .catch(logError);
+
+        DebugHelper.logRes(res);
+
+        return res.rows;
+    }
+
+    //! UNUSED
     makeWhereClause(columnName, count, logicalOperator) {
         return Array(count).fill(0).map((_, i) => `${columnName} = $${i + 1}`).join(` ${logicalOperator} `);
+    }
+
+    makeParametersSet(count, begin) {
+        if (count === 0) {
+            return 'NULL';
+        }
+        return Array(count).fill(0).map((_, i) => `$${i + begin}`).join(',');
     }
 
     makeValueString(rows, arity) {
@@ -163,12 +265,14 @@ module.exports = class Postgres {
         .catch(logError);
 
         const chunkSize = Math.floor(65535 / data.arity) * data.arity;
+
+        console.log('players: ', data.array.length, data.arity, chunkSize);
         
         for (let i = 0; i < data.array.length; i += chunkSize) {
             const query = {
                 text: `INSERT INTO ${tableName} (id, name, tribe_id, villages_cnt, points, rank)
-                    VALUES ${this.makeValueString(data.array.length / data.arity, data.arity)};`,
-                values: data.array,
+                    VALUES ${this.makeValueString(Math.min(chunkSize, data.array.length - i) / data.arity, data.arity)};`,
+                values: data.array.slice(i, i + chunkSize),
             }
 
             DebugHelper.logQuery(query);
@@ -197,7 +301,7 @@ module.exports = class Postgres {
         );`)
         .catch(logError);
 
-        console.log(tableName);
+        console.log(`${tableName}:`, data.array.length / data.arity);
 
         await this.pool.query(`TRUNCATE TABLE ${tableName} CASCADE;`)
         .catch(logError);

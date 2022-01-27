@@ -28,7 +28,10 @@ class App {
 
         this.app.use(express.json());
         this.app.use(express.urlencoded({ extended: true }));
+    }
 
+    async start() {
+        await this.repository.init();
         this.listen(5000);
     }
 
