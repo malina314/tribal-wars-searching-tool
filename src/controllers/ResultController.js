@@ -1,4 +1,5 @@
 const express = require('express');
+const InvalidServerError = require('../utils/InvalidServerError');
 
 module.exports = class ResultController {
     constructor() {
@@ -18,7 +19,7 @@ module.exports = class ResultController {
 
     validateServer(server) {
         if (!/^p?[1-9]\d*$/.test(server)) {
-            throw new Error('Invalid server name.');
+            throw new InvalidServerError();
         }
     }
 
@@ -68,11 +69,14 @@ module.exports = class ResultController {
                         result = await this.repository.updateMultipleServersData(servers5);
                         break;
                     default:
-                        result = 'Invalid query type.';
+                        result = 'Error: Invalid query type.';
                 }
-            // todo: hierarchia errorów bo getData musi jeszcze rzucać + jakieś default msg dla innego błędu
             } catch (err) {
-                result = err.message;
+                if (err instanceof InvalidServerError) {
+                    result = err.message;
+                } else {
+                    result = 'Error: Unexpected error occurred.';
+                }
             }
 
             console.log('result:', result?.toString()?.slice(0, 100));
