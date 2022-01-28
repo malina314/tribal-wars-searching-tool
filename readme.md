@@ -1,8 +1,6 @@
-# tribal wars searching tool
+# Tribal Wars Searching Tool
+Tribal Wars Searching Tool jest narzędziem do przeglądrakowej gry [plemiona](https://www.plemiona.pl/). Umożliwia wyszukiwanie graczy i wiosek spełniających zadane kryteria. Projekt został zaimplementowany w języku JavaScript i korzysta z bazy PostgreSQL.
 
-## pytania
-* Jak pobieram z neta 100k rekordów to lepiej wstawić wszystko do bazy czy najpierw pobrać też te 100k z bazy, porównać w js i zrobić update tylko tych co się zmieniły?
-* czy skala ocen to 5 10 15 20 czy może być coś pomiędzy?
-* czy za ładny frontend mogą być dodatkowe pkt? (jaki jest twój ulubiony kolor?)
-* jak oddajemy projekt? (discord czy jakoś inaczej?)
-* czy możemy się umówić na pokazanie projektu i powiesz co trzeba dodać / zmienić żeby było 20?
+
+## Model danych
+![model danych](/data_model.png)
