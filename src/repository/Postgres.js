@@ -50,6 +50,11 @@ module.exports = class Postgres {
         return 'OK';
     }
 
+    async getPlayersInLimit(server, points, limit) {
+        await this.updateServerData(server);
+        return this.getPlayersInLimitQuery(server, points, limit);
+    }
+
     async updateServerData(server) { // używanie zmiennej server jest bezpieczne bo jest walidowana wcześniej i spełnia regex /p?[1-9]\d*/
         if (!this.servers[server]) {
             await this.updateTribes(server);
@@ -143,6 +148,27 @@ module.exports = class Postgres {
 
     async getPlayersFromDifferentServersQuery(servers) {
         const res = await this.pool.query(servers.map(server => `SELECT name FROM server_${server}_players`).join(' INTERSECT '))
+        .catch(logError);
+
+        DebugHelper.logRes(res);
+
+        return res.rows;
+    }
+
+    async getPlayersInLimitQuery(server, points, limit) {
+        const lowerBound = Math.round(points / limit);
+        const upperBound = Math.round(points * limit);
+
+        const query = {
+            text: `SELECT P.name, P.points FROM server_${server}_players P
+                WHERE $1 <= P.points AND P.points <= $2
+                ORDER BY P.points DESC;`,
+            values: [lowerBound, upperBound],
+        }
+
+        DebugHelper.logQuery(query);
+
+        const res = await this.pool.query(query)
         .catch(logError);
 
         DebugHelper.logRes(res);

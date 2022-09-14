@@ -68,6 +68,14 @@ module.exports = class ResultController {
                         servers5.forEach(server => this.validateServer(server));
                         result = await this.repository.updateMultipleServersData(servers5);
                         break;
+                    case '6':
+                        const server6 = data.form6Server;
+                        const points = parseFloat(data.form6Points);
+                        const limit = parseFloat(data.form6Limit);
+                        this.validateServer(server6);
+                        result = await this.repository.getPlayersInLimit(server6, points, limit);
+                        result = result?.map(e => `[player]${e.name}[/player] ${e.points}`)?.join('\n');
+                        break;
                     default:
                         result = 'Error: Invalid query type.';
                 }
